@@ -160,3 +160,4 @@ cython_debug/
 #.idea/
 
 lichess_db_puzzle.csv
+*~
