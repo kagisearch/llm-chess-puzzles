@@ -48,7 +48,7 @@ We can see very large differences in the models' ability to solve these problems
 
 It is hard not to be impressed by the performance of the best model. However, we wanted to verify whether the model is actually capable of reasoning by building a simulation for a much simpler game - Connect 4 (see 'llmc4.py').
 
-When asked to play Connect 4, all Language Learning Models (LLMs) fail to do, even at most basic level. This should not be the case, as the rules of the game are simpler and widely available.
+When asked to play Connect 4, all Language Learning Models (LLMs) fail to do so, even at most basic level. This should not be the case, as the rules of the game are simpler and widely available.
 
 The only conclusion is that this failure is due to the lack of historical records of played games in the training data.
 
