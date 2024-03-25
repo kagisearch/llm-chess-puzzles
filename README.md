@@ -29,7 +29,7 @@ Each LLM is given the same 1000 chess puzzles to solve. See `puzzles.csv`. Bench
 | claude-3-haiku-20240307  | 38     | 3.8%     | 590           | 59.0%           | 363          |
 | claude-3-sonnet-20240229 | 23     | 2.3%     | 663           | 66.3%           | 286          |
 | gpt-3.5-turbo            | 23     | 2.3%     | 683           | 68.3%           | 269          |
-| claude-instant-1.2       | 10     | 1.0%     | 707           | 66.3%           | 245          |
+| claude-instant-1.2       | 10     | 1.0%     | 707           | 70.7%           | 245          |
 | mistral-large-latest     | 4      | 0.4%     | 813           | 81.3%           | 149          |
 | mixtral-8x7b             | 9      | 0.9%     | 832           | 83.2%           | 136          |
 | gemini-1.5-pro-latest*   | FAIL   | -        | -             | -               | -            |
