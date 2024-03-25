@@ -16,8 +16,6 @@ Here is an example prompt:
 **You are a very strong chess engine. The chess board is in the following state (FEN): 'q3k1nr/1pp1nQpp/3p4/1P2p3/4P3/B1PP1b2/B5PP/5K2 b k - 0 17'. 
 What is the best move for white?**
 
-It is quite remarkable that a language model is able to not just internalize the correct board state based on the notation, but also to find the best move.
-
 ## Results
 
 Each LLM is given the same 1000 chess puzzles to solve. See `puzzles.csv`. Benchmarked on Mar 25, 2024.
@@ -38,11 +36,11 @@ Each LLM is given the same 1000 chess puzzles to solve. See `puzzles.csv`. Bench
 
 * gemini-1.5-pro-latest failed to comply with instructions, no matter what I tried it did not want to just output the move and I did not have time to write a parser for outpout
 
-The best LLM was able to predict the best move in the position 229 out of 1000 times.
+The best LLM was able to predict the best move in the position 229 out of 1000 times. It is quite remarkable that a language model is able to not just internalize the correct board state based on the notation, but also to find the best move.
 
-The count of illegal moves made is included, as it represents a complete failure of the model to internalize the board state and rules of the game.
+The count of illegal moves made is included, as it represents a complete failure of the model to internalize the board state and rules of the game. 
 
-The adjusted Elo is an attempt to calculate the equivalent 'chess Elo' of an LLM, adjusted for illegal move attempts.
+The adjusted Elo is an attempt to calculate the equivalent 'chess Elo' of an LLM, adjusted for illegal move attempts. Take it with a grain of salt, it is mostly for comparative purposes between LLMs.
 
 ## Commentary
 
