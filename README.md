@@ -64,13 +64,13 @@ pip install chess pyllms
 python llmchess.py
 ```
 
-The output will contain the index of the puzzle that is solved together with current score information:
+This will assume you have OpenAI, Mistral and Anthropic API keys set in the environment, per [pyllms](https://github.com/kagisearch/pyllms) instructions.
+
+The output will contain the index and ELO of the puzzle that is solved together with current score information:
 ```
 Puzzle 505 (1556) solved. Try it: https://lichess.org/odoNOk41/black#49 Score: -351 Elo: 818 adjusted:243
 Puzzle 708 (1561) solved. Try it: https://lichess.org/xC286h6k/black#33 Score: -493 Elo: 813 adjusted:241
 ```
-
-This will assume you have OpenAI, Mistral and Anthropic API keys set in the environment, per [pyllms](https://github.com/kagisearch/pyllms) instructions.
 
 Repository contains 1000 chess puzzles used to reproduce the above results. Puzzles are sourced at random from the [Lichess puzzle database](https://database.lichess.org/#puzzles). There is code available to create a different sample.
 
