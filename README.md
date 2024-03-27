@@ -54,7 +54,7 @@ The only conclusion is that this failure is due to the lack of historical record
 
 This implies that it cannot be argued that these models are able to 'reason' in any sense of the word, but merely output a variation of what they have seen during training.
 
-Also it means that the utility of this benchmark to compare models in the future will be influenced by this type of data finding its way into the training set, and that even chess puzzles can become a dedicated part of it. There are already chess optimized GPTs being trained with small models which would probably crush the general purpose model.
+Also it means that the utility of this benchmark to compare models in the future will be influenced by this type of data finding its way into the model training data, and that even chess puzzles can become a dedicated part of it. 
 
 ## Usage
 
