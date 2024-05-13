@@ -37,7 +37,7 @@ Each LLM is given the same 1000 chess puzzles to solve. See `puzzles.csv`. Bench
 
 * gemini-1.5-pro-latest failed to comply with instructions to output just the move, no matter what how we changed the prompt
 
-The best LLM was able to predict the best move in the position 229 out of 1000 times. It is quite remarkable that a language model is able to not just internalize the correct board state based on the notation, but also to find the best move.
+It is quite remarkable that a language model is able to not just internalize the correct board state based on the notation, but also to find the best move.
 
 The count of illegal moves made is included, as it represents a complete failure of the model to internalize the board state and rules of the game. 
 
