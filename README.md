@@ -18,7 +18,7 @@ What is the best move for white?**
 
 ## Results
 
-Each LLM is given the same 1000 chess puzzles to solve. See `puzzles.csv`. Benchmarked on Mar 25, 2024.
+Each LLM is given the same 1000 chess puzzles to solve. See `puzzles.csv`. Benchmarked on Mar 25, 2024. Last Update: May 13, 2024 (added gpt-4o)
 
 
 | Model                    | Solved | Solved % | Illegal Moves | Illegal Moves % | Adjusted Elo |
