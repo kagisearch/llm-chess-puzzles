@@ -23,6 +23,7 @@ Each LLM is given the same 1000 chess puzzles to solve. See `puzzles.csv`. Bench
 
 | Model                    | Solved | Solved % | Illegal Moves | Illegal Moves % | Adjusted Elo |
 |--------------------------|--------|----------|---------------|-----------------|--------------|
+| gpt-4o                   | 501    | 50.1%    | 127           | 12.7%           | 1790         | 
 | gpt-4-turbo-preview      | 229    | 22.9%    | 163           | 16.3%           | 1144         |
 | gpt-4                    | 195    | 19.5%    | 183           | 18.3%           | 1047         |
 | claude-3-opus-20240229   | 72     | 7.2%     | 464           | 46.4%           | 521          |
