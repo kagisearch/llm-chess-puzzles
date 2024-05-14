@@ -9,7 +9,9 @@ While we initially thought this would lead to interesting conclusions, further r
 
 ## Results
 
-Each LLM is given the same 1000 chess puzzles to solve. See `puzzles.csv`. Benchmarked on Mar 25, 2024. Last Update: May 13, 2024 (added gpt-4o)
+Each LLM is given the same 1000 chess puzzles to solve. See `puzzles.csv`. 
+
+Benchmarked on Mar 25, 2024. Last update: May 13, 2024 (added gpt-4o)
 
 
 | Model                    | Solved | Solved % | Illegal Moves | Illegal Moves % | Adjusted Elo |
@@ -29,20 +31,23 @@ Each LLM is given the same 1000 chess puzzles to solve. See `puzzles.csv`. Bench
 * gemini-1.5-pro-latest failed to comply with instructions to output just the move, no matter what how we changed the prompt
 
 
-
 The count of illegal moves made is included, as it represents a complete failure of the model to internalize the board state and rules of the game. 
 
 The adjusted Elo is an attempt to calculate the equivalent 'chess Elo' of an LLM, adjusted for illegal move attempts. Take it with a grain of salt, it is mostly for comparative purposes between LLMs.
 
 ## Methodology
 
-Each LLM is given 1000 chess puzzles in FEN notation and its job is to predict the best next move.
+Each LLM is given 1000 chess puzzles in FEN notation and its job is to predict the best  move.
 
 Here is an example prompt:
 
+```
+You are a very strong chess engine.
 
-**You are a very strong chess engine. The chess board is in the following state (FEN): 'q3k1nr/1pp1nQpp/3p4/1P2p3/4P3/B1PP1b2/B5PP/5K2 b k - 0 17'. 
-What is the best move for white?**
+The chess board is in the following state (FEN): 'q3k1nr/1pp1nQpp/3p4/1P2p3/4P3/B1PP1b2/B5PP/5K2 b k - 0 17'. 
+
+What is the best move for white?
+```
 
 It is quite remarkable that a language model is able to not just internalize the correct board state based on the notation, but also find the best move using the rules of the game and chess strategy.
 
