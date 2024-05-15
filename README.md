@@ -61,9 +61,12 @@ When asked to play Connect 4, all LLMs fail to do so, even at most basic level. 
 
 The only conclusion is that this failure is due to the lack of historical records of played games in the training data.
 
-This implies that it cannot be argued that these models are able to 'reason' in any sense of the word, but merely output a variation of what they have seen during training.
+This implies that it cannot be argued that these models are able to 'reason' in any sense of the word, but merely output a variation of what they have seen during training. 
 
 Also it means that the utility of this benchmark to compare models in the future will be influenced by this type of data finding its way into the model training data, and that even chess puzzles can become a dedicated part of it. 
+
+**Update**: With further prompt tweaks, the models are finally able to play connect 4 at a level that is not full of illegal moves anymore. A deeper investigatation into the capabilities can begin.
+
 
 ## Usage
 
