@@ -67,6 +67,52 @@ Also it means that the utility of this benchmark to compare models in the future
 
 **Update**: With further prompt tweaks, the best model is finally able to play connect 4 at level of maybe a four year old? Illegal moves and wrong interpration of the board still happen.
 
+Example output for Connect 4. X to play, gpt-4o says there are no direct treats (which is wrong, there are 3 O's stacked in second column). It ends up playing a random move.
+```
+---+---+---+---+---+---+---
+   |   |   |   |   |   |   
+   |   |   | X |   |   |   
+   |   |   | O |   |   |   
+   | O |   | X |   |   |   
+   | O |   | O | O |   |   
+ X | O | X | X | X | O | X 
+
+Given the board state:
+
+- Column 0: X
+- Column 1: OOO
+- Column 2: X
+- Column 3: XOXOX
+- Column 4: XO
+- Column 5: O
+- Column 6: X
+
+Player X is to move. Let's analyze the best move:
+
+1. **Column 0**: Adding an X here won't create a winning move and doesn't block any immediate threats.
+2. **Column 1**: Adding an X here won't create a winning move and doesn't block any immediate threats.
+3. **Column 2**: Adding an X here won't create a winning move and doesn't block any immediate threats.
+4. **Column 3**: Adding an X here won't create a winning move and doesn't block any immediate threats.
+5. **Column 4**: Adding an X here won't create a winning move and doesn't block any immediate threats.
+6. **Column 5**: Adding an X here won't create a winning move and doesn't block any immediate threats.
+7. **Column 6**: Adding an X here won't create a winning move and doesn't block any immediate threats.
+
+Since none of the columns provide an immediate winning move or block a winning move for the opponent, the best strategy is to play in a column that maximizes future opportunities or blocks potential threats.
+
+Given the current state, placing an X in **Column 4** seems to be the best move as it is more central and can potentially create more opportunities for future connections.
+
+<column>4</column>
+Player X's move: Column 4
+---+---+---+---+---+---+---
+   |   |   |   |   |   |   
+   |   |   | X |   |   |   
+   |   |   | O |   |   |   
+   | O |   | X | X |   |   
+   | O |   | O | O |   |   
+ X | O | X | X | X | O | X 
+
+
+```
 
 ## Usage
 
