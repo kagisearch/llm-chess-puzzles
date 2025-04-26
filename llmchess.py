@@ -5,6 +5,26 @@ import llms
 import pandas as pd
 import random
 
+# --- Model Selection ---
+# Define the list of LLM models to test here.
+# Add or remove model identifiers string from this list to change which models are evaluated.
+# Example models: 'gpt-3.5-turbo', 'gpt-4-turbo-preview', 'gpt-4', 'claude-3-opus-20240229', etc.
+MODELS_TO_TEST = [
+    'gpt-3.5-turbo',
+    'gpt-4-turbo-preview',
+    'gpt-4',
+    'claude-3-opus-20240229',
+    'mistral-large-latest',
+    'open-mixtral-8x7b',
+    'claude-3-sonnet-20240229',
+    'claude-3-haiku-20240307',
+    'claude-instant-1.2',
+    'gemini-1.5-pro-latest',
+    # 'gemini-2.5-pro-exp-03-25', # Example of a commented-out model
+    # 'gpt-4.5'                  # Example of a commented-out model
+]
+# --- End Model Selection ---
+
 def calculate_elo_change2(player_rating, opponent_rating, result):
     if result == 1:
         new_player_rating, new_opponent_rating = env.rate_1vs1(player_rating, opponent_rating, drawn=False)
@@ -142,17 +162,18 @@ if __name__ == "__main__":
     #puzzles.to_csv('puzzles.csv', index=False)
 
     puzzles=pd.read_csv('puzzles.csv')
-    
-    models=['gpt-3.5-turbo','gpt-4-turbo-preview','gpt-4','claude-3-opus-20240229','mistral-large-latest','open-mixtral-8x7b','claude-3-sonnet-20240229','claude-3-haiku-20240307','claude-instant-1.2','gemini-1.5-pro-latest']
-    models=[ 'gemini-2.5-pro-exp-03-25','gpt-4.5']
+
     env = Glicko2(tau=0.5)
 
     r1 = env.create_rating(1000, 400, 0.06) # assumed start elo rating
-    
-    
-    for model in models:
-        model1=llms.init(model)
-        model2=llms.init(model)
+
+
+    for model_name in MODELS_TO_TEST:
+        print(f"\n--- Testing model: {model_name} ---")
+        model1=llms.init(model_name)
+        # Assuming model2 should be the same as model1 for puzzle solving
+        # If model2 needs separate initialization or is different, adjust accordingly
+        model2=llms.init(model_name)
         count_good=0
         count_illegal=0
         score=0
@@ -195,8 +216,10 @@ if __name__ == "__main__":
                 elo, opp=calculate_elo_change(elo, rating, 0)
                 elo2, opp=calculate_elo_change2(r1, r2, 0)
                 streak.append((LOSS,r2))
-                
+
             score+=result
         rated = env.rate(r1, streak)
-        print(f"{model} Score: {score} Solved: {count_good} Illegal: {count_illegal} Elo: {int(rated.mu)} adjusted:{int(env.rate(r1, streak).mu*(1-count_illegal/(wins+losses)))} ")
+        # Ensure wins+losses is not zero before division
+        adjusted_elo = int(rated.mu * (1 - count_illegal / (wins + losses))) if (wins + losses) > 0 else int(rated.mu)
+        print(f"{model_name} Score: {score} Solved: {count_good} Illegal: {count_illegal} Elo: {int(rated.mu)} adjusted:{adjusted_elo} ")
  
