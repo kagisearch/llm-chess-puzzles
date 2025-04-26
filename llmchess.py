@@ -104,7 +104,8 @@ def gpt_chess_move(board, color):
         move = board.parse_san(move_san)  # Converts SAN to move object
         return move.uci()  # Converts move object to UCI format
     except Exception as e:
-        #print(f"Error during GPT query or parsing: {e}")
+        print(f"Error during GPT query or parsing: {e}")
+        print(move_san)
         return None
 
 
@@ -143,7 +144,7 @@ if __name__ == "__main__":
     puzzles=pd.read_csv('puzzles.csv')
     
     models=['gpt-3.5-turbo','gpt-4-turbo-preview','gpt-4','claude-3-opus-20240229','mistral-large-latest','open-mixtral-8x7b','claude-3-sonnet-20240229','claude-3-haiku-20240307','claude-instant-1.2','gemini-1.5-pro-latest']
-    models=[ 'gemini-1.5-pro-latest']
+    models=[ 'gemini-2.5-pro-exp-03-25','gpt-4.5']
     env = Glicko2(tau=0.5)
 
     r1 = env.create_rating(1000, 400, 0.06) # assumed start elo rating
@@ -181,6 +182,8 @@ if __name__ == "__main__":
             else:
                 if result<0: # if -1 then GPT made illegal move
                     count_illegal+=1
+                    print(f"Puzzle {index + 1} ({rating}) solved. Try it: {puzzle['GameUrl']} Score: {score} Elo: {int(env.rate(r1, streak).mu)} adjusted:{int(env.rate(r1, streak).mu*(1-count_illegal/(wins+losses)))}")
+
                     if 0: # we can further penalize it
                         losses+=1
                         r3=env.create_rating(rating/2, puzzle['RatingDeviation'])
