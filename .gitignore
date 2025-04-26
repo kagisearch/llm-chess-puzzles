@@ -161,3 +161,4 @@ cython_debug/
 
 lichess_db_puzzle.csv
 *~
+.aider*
