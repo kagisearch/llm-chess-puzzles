@@ -12,7 +12,10 @@ import time # Optional: for adding delays if needed
 # Add or remove model identifiers string from this list to change which models are evaluated.
 # Example models: 'gpt-3.5-turbo', 'gpt-4-turbo-preview', 'gpt-4', 'claude-3-opus-20240229', etc.
 MODELS_TO_TEST = [
-#    'gpt-4o',
+    'gpt-4o',
+    'gpt-4.1',
+    'claude-3-7-sonnet-20250219',
+    'deepseek-chat',
 #    'gpt-4-turbo-preview',
     # 'gpt-3.5-turbo',
     # 'gpt-4',
@@ -23,7 +26,7 @@ MODELS_TO_TEST = [
     # 'claude-3-haiku-20240307',
     # 'claude-instant-1.2',
     # 'gemini-1.5-pro-latest',
-     'gemini-2.5-pro-exp-03-25', # Example of a commented-out model
+#     'gemini-2.5-pro-exp-03-25', # Example of a commented-out model
      'gpt-4.5-preview'                  # Example of a commented-out model
 ]
 # --- End Model Selection ---
