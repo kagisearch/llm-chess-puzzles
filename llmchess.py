@@ -75,21 +75,30 @@ def solve_puzzle_with_gpt(puzzle, model, model_name):
 
     # Time the move generation
     start_time = time.time()
-    # Now ask the provided model to solve for the next move, passing model_name
-    move_uci = gpt_chess_move(board, 'white' if board.turn == chess.WHITE else 'black', model, model_name)
+    # Ask the model for the move and get detailed results
+    move_uci, raw_response, parsed_san, error_msg = gpt_chess_move(
+        board, 'white' if board.turn == chess.WHITE else 'black', model, model_name
+    )
     end_time = time.time()
     duration = end_time - start_time
 
-    result = 0 # Default to incorrect
-    if move_uci is None: # Check for None explicitly, as empty string could be ambiguous
-        result = -1 # Indicate an error or illegal move scenario
-    elif len(moves) > 1 and move_uci == moves[1]:
-        #print("GPT successfully predicted the next move!")
-        result = 1 # Correct
-    # else: # Incorrect move (already default)
-        #print(f"GPT failed to solve the puzzle. Expected {moves[1]} but got {move_uci}")
+    # Print model name and its raw output
+    print(f"{model_name}: {raw_response.strip()}") # Use strip() to clean potential newlines
 
-    return result, duration # Return both result and time taken
+    result = 0 # Default to incorrect
+    outcome_str = "Incorrect"
+    if move_uci is None: # Check if move generation/parsing failed
+        result = -1 # Indicate an error or illegal move scenario
+        outcome_str = f"Illegal/Error ({error_msg or 'Move generation failed'})" # Include error details if available
+    elif len(moves) > 1 and move_uci == moves[1]:
+        result = 1 # Correct
+        outcome_str = "Correct"
+    # else: Incorrect move (already default)
+
+    # Print the outcome immediately after the model's response
+    print(f" -> {outcome_str}")
+
+    return result, duration # Return the numerical result and time taken
 
 
 def gpt_chess_move(board, color, model, model_name):
@@ -101,31 +110,49 @@ def gpt_chess_move(board, color, model, model_name):
     model: An initialized llms model object.
     model_name: The name of the model being used (for logging).
 
-    Returns: A move in UCI format (e.g., 'e2e4') suggested by the model, or None on error.
+    Returns: A tuple: (uci_move, raw_response, parsed_san, error_message)
+             uci_move: UCI string if successful, else None.
+             raw_response: Raw text from the model.
+             parsed_san: The cleaned SAN extracted, or attempted SAN.
+             error_message: String with error details if any, else None.
     """
     # Updated prompt to emphasize legality and SAN format, and forbid check/mate symbols.
     prompt = f"You are a chess expert. Given the FEN '{board.fen()}', it is {color}'s turn to move. Provide the single best *legal* move in Standard Algebraic Notation (SAN). Examples: 'Nf3', 'O-O', 'Rxe5', 'b8=Q'. Do not include commentary, checks ('+'), or checkmates ('#'). Output only the move."
 
     #print(prompt)
-    # Removed global model selection logic
+    raw_response = ""
+    move_san = ""
     try:
         # Use the provided model object directly
         response = model.complete(
             prompt=prompt, temperature=0.01 # Low temperature for deterministic best move
         )
+        raw_response = response.text # Store raw response
 
-        # Print model name before its raw output
-        print(f"{model_name}: {response.text}")
-        text_response = response.text.strip().lstrip('.')
+        # Attempt to parse the response
+        text_response = raw_response.strip().lstrip('.')
         # Take the first word and remove potential check/mate indicators ('+', '#')
         move_san = text_response.split()[0].rstrip('+#')
         move = board.parse_san(move_san)  # Converts SAN to move object
-        return move.uci()  # Converts move object to UCI format
+        return move.uci(), raw_response, move_san, None # Success
+    except chess.InvalidMoveError as e:
+        # Handle specific illegal move errors (move is syntactically valid SAN but illegal on board)
+        error_msg = f"Illegal SAN move '{move_san}': {e}"
+        print(error_msg) # Keep this print for debugging illegal moves
+        return None, raw_response, move_san, error_msg
+    except chess.IllegalMoveError as e:
+        # Handle other parsing errors (e.g., invalid SAN format)
+        error_msg = f"Invalid SAN format '{move_san}': {e}"
+        print(error_msg) # Keep this print for debugging invalid SAN
+        return None, raw_response, move_san, error_msg
     except Exception as e:
-        # Include the problematic SAN in the error message for easier debugging
-        print(f"Error during GPT query or parsing SAN '{move_san}': {e}")
-        print(move_san)
-        return None
+        # Handle other exceptions (e.g., API errors, network issues)
+        error_msg = f"Error during GPT query or processing: {e}"
+        # Include the problematic SAN if available, otherwise use raw_response
+        problematic_input = move_san if move_san else raw_response
+        print(f"Error during GPT query or parsing SAN '{problematic_input}': {e}")
+        # Return None for uci_move, include raw_response if available
+        return None, raw_response, problematic_input, error_msg
 
 
 def play_chess_with_gpt():
