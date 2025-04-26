@@ -118,14 +118,16 @@ def gpt_chess_move(board, color):
         response = model.complete(
             prompt=prompt, temperature=0.01
         )
-          
+
         print(response.text)
-        text_response = response.text.lstrip('.')
-        move_san = text_response.split()[0]  # Taking the first word as the move
+        text_response = response.text.strip().lstrip('.')
+        # Take the first word and remove potential check/mate indicators ('+', '#')
+        move_san = text_response.split()[0].rstrip('+#')
         move = board.parse_san(move_san)  # Converts SAN to move object
         return move.uci()  # Converts move object to UCI format
     except Exception as e:
-        print(f"Error during GPT query or parsing: {e}")
+        # Include the problematic SAN in the error message for easier debugging
+        print(f"Error during GPT query or parsing SAN '{move_san}': {e}")
         print(move_san)
         return None
 
@@ -200,11 +202,23 @@ if __name__ == "__main__":
                 streak.append((WIN,r2))
                 solved.append(rating)
 
-                print(f"Puzzle {index + 1} ({rating}) solved. Try it: {puzzle['GameUrl']} Score: {score} Elo: {int(env.rate(r1, streak).mu)} adjusted:{int(env.rate(r1, streak).mu*(1-count_illegal/(wins+losses)))}")
+                # Calculate adjusted Elo safely
+                current_elo = int(env.rate(r1, streak).mu)
+                adjusted_elo = current_elo
+                if wins + losses > 0:
+                    adjusted_elo = int(current_elo * (1 - count_illegal / (wins + losses)))
+                print(f"Puzzle {index + 1} ({rating}) solved. Try it: {puzzle['GameUrl']} Score: {score} Elo: {current_elo} adjusted:{adjusted_elo}")
             else:
                 if result<0: # if -1 then GPT made illegal move
                     count_illegal+=1
-                    print(f"Puzzle {index + 1} ({rating}) solved. Try it: {puzzle['GameUrl']} Score: {score} Elo: {int(env.rate(r1, streak).mu)} adjusted:{int(env.rate(r1, streak).mu*(1-count_illegal/(wins+losses)))}")
+                    # Calculate adjusted Elo safely
+                    current_elo = int(env.rate(r1, streak).mu)
+                    adjusted_elo = current_elo
+                    # Note: wins+losses might still be 0 here if it's the very first puzzle and it's illegal
+                    if wins + losses > 0:
+                         adjusted_elo = int(current_elo * (1 - count_illegal / (wins + losses)))
+                    # The print statement seems misplaced here (says "solved"), correcting it.
+                    print(f"Puzzle {index + 1} ({rating}) illegal move. Try it: {puzzle['GameUrl']} Score: {score} Elo: {current_elo} adjusted:{adjusted_elo}")
 
                     if 0: # we can further penalize it
                         losses+=1
