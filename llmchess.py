@@ -140,19 +140,19 @@ def gpt_chess_move(board, color, model, model_name):
     except chess.InvalidMoveError as e:
         # Handle specific illegal move errors (move is syntactically valid SAN but illegal on board)
         error_msg = f"Illegal SAN move '{move_san}': {e}"
-        print(error_msg) # Keep this print for debugging illegal moves
+        # Removed print(error_msg) here
         return None, raw_response, move_san, error_msg
     except chess.IllegalMoveError as e:
         # Handle other parsing errors (e.g., invalid SAN format)
         error_msg = f"Invalid SAN format '{move_san}': {e}"
-        print(error_msg) # Keep this print for debugging invalid SAN
+        # Removed print(error_msg) here
         return None, raw_response, move_san, error_msg
     except Exception as e:
         # Handle other exceptions (e.g., API errors, network issues)
         error_msg = f"Error during GPT query or processing: {e}"
         # Include the problematic SAN if available, otherwise use raw_response
         problematic_input = move_san if move_san else raw_response
-        print(f"Error during GPT query or parsing SAN '{problematic_input}': {e}")
+        # Removed print(f"Error during GPT query or parsing SAN '{problematic_input}': {e}") here
         # Return None for uci_move, include raw_response if available
         return None, raw_response, problematic_input, error_msg
 
