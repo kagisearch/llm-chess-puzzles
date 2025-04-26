@@ -69,17 +69,24 @@ def solve_puzzle_with_gpt(puzzle, model, model_name):
     first_move = moves[0]
     #print(f"Playing first move: {first_move}")
     board.push_uci(first_move)
+
+    # Time the move generation
+    start_time = time.time()
     # Now ask the provided model to solve for the next move, passing model_name
     move_uci = gpt_chess_move(board, 'white' if board.turn == chess.WHITE else 'black', model, model_name)
+    end_time = time.time()
+    duration = end_time - start_time
+
+    result = 0 # Default to incorrect
     if move_uci is None: # Check for None explicitly, as empty string could be ambiguous
-        return -1 # Indicate an error or illegal move scenario
-    # Check if the predicted move matches the second move in the puzzle solution
-    if len(moves) > 1 and move_uci != moves[1]:
-        #print(f"GPT failed to solve the puzzle. Expected {moves[1]} but got {move_uci}")
-        return 0
-    else:
+        result = -1 # Indicate an error or illegal move scenario
+    elif len(moves) > 1 and move_uci == moves[1]:
         #print("GPT successfully predicted the next move!")
-        return 1
+        result = 1 # Correct
+    # else: # Incorrect move (already default)
+        #print(f"GPT failed to solve the puzzle. Expected {moves[1]} but got {move_uci}")
+
+    return result, duration # Return both result and time taken
 
 
 def gpt_chess_move(board, color, model, model_name):
@@ -169,7 +176,8 @@ if __name__ == "__main__":
                 'wins': 0,      # Correct solves
                 'losses': 0,    # Incorrect solves (excluding illegal)
                 'illegal_moves': 0,
-                'total_processed': 0
+                'total_processed': 0,
+                'total_time': 0.0 # Add total time tracker
             }
             print(f"Initialized {model_name}")
         except Exception as e:
@@ -212,21 +220,25 @@ if __name__ == "__main__":
             results_for_puzzle = {}
             for future in concurrent.futures.as_completed(future_to_model):
                 model_name = future_to_model[future]
+                duration = 0.0 # Default duration if exception occurs before timing
                 try:
-                    result = future.result() # result: 1 (correct), 0 (incorrect), -1 (illegal/error)
-                    results_for_puzzle[model_name] = result
+                    # Unpack the result and duration
+                    result, duration = future.result() # result: 1 (correct), 0 (incorrect), -1 (illegal/error)
+                    results_for_puzzle[model_name] = (result, duration)
                 except Exception as exc:
                     print(f'{model_name} generated an exception for puzzle {puzzle_index}: {exc}')
-                    results_for_puzzle[model_name] = -1 # Treat exceptions as errors/illegal
+                    results_for_puzzle[model_name] = (-1, duration) # Treat exceptions as errors/illegal, keep duration if available
 
             # --- Update States and Report Per-Puzzle Results ---
             print(f"Puzzle {puzzle_index} Results:")
             for model_name in MODELS_TO_TEST:
                  if model_name in models: # Check if model exists and was processed
                     state = model_states[model_name]
-                    result = results_for_puzzle.get(model_name, -2) # -2 if model didn't run for some reason
+                    # Get result and duration, provide defaults if missing
+                    result, duration = results_for_puzzle.get(model_name, (-2, 0.0))
 
                     state['total_processed'] += 1
+                    state['total_time'] += duration # Accumulate time
                     r_model = state['rating_obj']
                     outcome_str = ""
 
@@ -252,8 +264,8 @@ if __name__ == "__main__":
 
                     state['rating_obj'] = new_r_model # Update rating object in state
 
-                    # Per-puzzle status line
-                    print(f"  - {model_name}: {outcome_str} ({state['wins']}/{state['total_processed']}), Elo: {int(state['rating_obj'].mu)}")
+                    # Per-puzzle status line including time
+                    print(f"  - {model_name}: {outcome_str} ({state['wins']}/{state['total_processed']}), Elo: {int(state['rating_obj'].mu)}, Time: {duration:.2f}s")
 
 
     # --- Final Summary ---
@@ -271,9 +283,12 @@ if __name__ == "__main__":
 
             print(f"{model_name}:")
             print(f"  Score: {state['score']}")
-            print(f"  Solved Correctly: {state['wins']} / {state['total_processed']} ({state['wins']/state['total_processed']:.2%} accuracy)")
+            accuracy = (state['wins'] / state['total_processed'] * 100) if state['total_processed'] > 0 else 0
+            avg_time = state['total_time'] / state['total_processed'] if state['total_processed'] > 0 else 0
+            print(f"  Solved Correctly: {state['wins']} / {state['total_processed']} ({accuracy:.2f}% accuracy)")
             print(f"  Illegal Moves: {state['illegal_moves']}")
             print(f"  Final Glicko Elo: {final_elo}")
             print(f"  Adjusted Elo (penalizing illegal): {adjusted_elo}")
+            print(f"  Average Time per Puzzle: {avg_time:.2f}s")
             print("-" * 20)
  
