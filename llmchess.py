@@ -53,13 +53,13 @@ def select_random_puzzles(puzzles):
     sorted_puzzles = puzzles.assign(SortKey=puzzles['NbPlays'] * puzzles['Popularity']).sort_values(by='SortKey', ascending=False).head(100000)
     return sorted_puzzles.sample(n=1000)
 
-def solve_puzzle_with_gpt(puzzle, model):
+def solve_puzzle_with_gpt(puzzle, model, model_name):
     """
     Attempt to solve a selected chess puzzle using a given LLM model.
 
     puzzle: A Series containing puzzle information.
     model: An initialized llms model object.
-    puzzle: A Series containing puzzle information.
+    model_name: The name of the model being used (for logging).
     """
     board = chess.Board(puzzle['FEN'])
     moves = puzzle['Moves'].split()
@@ -69,8 +69,8 @@ def solve_puzzle_with_gpt(puzzle, model):
     first_move = moves[0]
     #print(f"Playing first move: {first_move}")
     board.push_uci(first_move)
-    # Now ask the provided model to solve for the next move
-    move_uci = gpt_chess_move(board, 'white' if board.turn == chess.WHITE else 'black', model)
+    # Now ask the provided model to solve for the next move, passing model_name
+    move_uci = gpt_chess_move(board, 'white' if board.turn == chess.WHITE else 'black', model, model_name)
     if move_uci is None: # Check for None explicitly, as empty string could be ambiguous
         return -1 # Indicate an error or illegal move scenario
     # Check if the predicted move matches the second move in the puzzle solution
@@ -82,13 +82,14 @@ def solve_puzzle_with_gpt(puzzle, model):
         return 1
 
 
-def gpt_chess_move(board, color, model):
+def gpt_chess_move(board, color, model, model_name):
     """
     Ask the provided LLM model for a chess move.
 
     board: chess.Board object representing the current game state.
     color: 'white' or 'black' indicating which player's move to generate.
     model: An initialized llms model object.
+    model_name: The name of the model being used (for logging).
 
     Returns: A move in UCI format (e.g., 'e2e4') suggested by the model, or None on error.
     """
@@ -103,7 +104,8 @@ def gpt_chess_move(board, color, model):
             prompt=prompt, temperature=0.01 # Low temperature for deterministic best move
         )
 
-        print(response.text)
+        # Print model name before its raw output
+        print(f"{model_name}: {response.text}")
         text_response = response.text.strip().lstrip('.')
         # Take the first word and remove potential check/mate indicators ('+', '#')
         move_san = text_response.split()[0].rstrip('+#')
@@ -186,16 +188,26 @@ if __name__ == "__main__":
         for index, puzzle in puzzles.iterrows():
             puzzle_index = index + 1
             print(f"\n--- Processing Puzzle {puzzle_index}/{len(puzzles)} (ID: {puzzle['PuzzleId']}, Rating: {puzzle['Rating']}) ---")
+
+            # Extract and print the correct move for the puzzle
+            correct_moves = puzzle['Moves'].split()
+            if len(correct_moves) > 1:
+                print(f"Correct Move: {correct_moves[1]}")
+            else:
+                print("Correct Move: (Not available - puzzle has fewer than 2 moves)")
+
             puzzle_rating = puzzle['Rating']
             puzzle_rating_deviation = puzzle['RatingDeviation']
             # Ensure deviation is not too low for Glicko2 calculations
             puzzle_rating_deviation = max(puzzle_rating_deviation, 10) # Set a minimum deviation
             r_puzzle = env.create_rating(puzzle_rating, puzzle_rating_deviation)
 
-            future_to_model = {
-                executor.submit(solve_puzzle_with_gpt, puzzle, models[model_name]): model_name
-                for model_name in MODELS_TO_TEST if model_name in models # Ensure model was initialized
-            }
+            future_to_model = {}
+            for model_name in MODELS_TO_TEST:
+                if model_name in models: # Ensure model was initialized
+                    # Pass model_name to solve_puzzle_with_gpt
+                    future = executor.submit(solve_puzzle_with_gpt, puzzle, models[model_name], model_name)
+                    future_to_model[future] = model_name
 
             results_for_puzzle = {}
             for future in concurrent.futures.as_completed(future_to_model):
