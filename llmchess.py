@@ -92,7 +92,8 @@ def gpt_chess_move(board, color, model):
 
     Returns: A move in UCI format (e.g., 'e2e4') suggested by the model, or None on error.
     """
-    prompt = f"You are a very strong chess engine. The chess board is in the following state (FEN): '{board.fen()}'. What is the best move for {color}? You are allowed to answer only with the move itself and nothing else."
+    # Updated prompt to emphasize legality and SAN format, and forbid check/mate symbols.
+    prompt = f"You are a chess expert. Given the FEN '{board.fen()}', it is {color}'s turn to move. Provide the single best *legal* move in Standard Algebraic Notation (SAN). Examples: 'Nf3', 'O-O', 'Rxe5', 'b8=Q'. Do not include commentary, checks ('+'), or checkmates ('#'). Output only the move."
 
     #print(prompt)
     # Removed global model selection logic
