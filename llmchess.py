@@ -14,7 +14,8 @@ import time # Optional: for adding delays if needed
 MODELS_TO_TEST = [
     'gpt-4o',
     'gpt-4.1',
-    'claude-3-7-sonnet-20250219',
+#    'claude-3-7-sonnet-20250219',
+#    "gemini-2.5-flash-preview-04-17",
 #    'meta-llama/llama-4-maverick-17b-128e-instruct',
 #    'meta-llama/llama-4-scout-17b-16e-instruct',
 #    'deepseek-chat',
@@ -28,8 +29,8 @@ MODELS_TO_TEST = [
     # 'claude-3-haiku-20240307',
     # 'claude-instant-1.2',
     # 'gemini-1.5-pro-latest',
-#     'gemini-2.5-pro-exp-03-25', # Example of a commented-out model
-     'gpt-4.5-preview'                  # Example of a commented-out model
+#     'gemini-2.5-pro-exp-03-25', 
+#     'gpt-4.5-preview'           
 ]
 # --- End Model Selection ---
 
