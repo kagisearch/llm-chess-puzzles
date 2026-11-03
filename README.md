@@ -44,6 +44,7 @@ Updated: April 26, 2025
 
 | Model                     | Solved | Solved % | Illegal Moves | Illegal Moves % | Adjusted Elo |
 |---------------------------|--------|----------|---------------|-----------------|--------------|
+| depth-5 (chess engine)\* | 966    | 96.6%    | 0             | 0.0%            | 2221         |
 | gpt-4.5-preview           | 848    | 84.8%    | 9             | 0.9%            | 1866         |
 | gpt-4.1                   | 579    | 57.9%    | 76            | 7.6%            | 1345         |
 | gpt-4o                    | 536    | 53.6%    | 89            | 8.9%            | 1321         |
@@ -56,6 +57,8 @@ Updated: April 26, 2025
 | claude-instant-1.2        | 10     | 1.0%     | 707           | 70.7%           | 245          |
 | mistral-large-latest      | 4      | 0.4%     | 813           | 81.3%           | 149          |
 | mixtral-8x7b              | 9      | 0.9%     | 832           | 83.2%           | 136          |
+
+\* Not an LLM: [depth 5](https://huggingface.co/Kedhareswer/depth-5) is a 4.8 MB NNUE chess engine with alpha-beta search (1 s per move), shown as a non-LLM reference point. Same `puzzles.csv` and first-move rule; its adjusted Elo comes from a reimplementation of Glicko-2 over the puzzles in file order.
 
 
 The count of illegal moves made is included, as it represents a complete failure of the model to internalize the board state and rules of the game. 
